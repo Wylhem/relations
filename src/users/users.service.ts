@@ -17,19 +17,35 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  public async getAll(): Promise<Array<Users>> {
+    return await this.prismaService.users.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  public async getOne(id: string): Promise<Users> {
+    return await this.prismaService.users.findFirst({
+      where: {
+        usr_id: id,
+      },
+    });
   }
 
-  update(id: number, updateUserDto: UserDto) {
-    return `This action updates a #${id} user`;
+  public async update(id: string, userDto: UserDto) {
+    return await this.prismaService.users.update({
+      where: {
+        usr_id: id,
+      },
+      data: {
+        usr_email: userDto.email,
+        usr_username: userDto.username,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.prismaService.users.delete({
+      where: {
+        usr_id: id,
+      },
+    });
   }
 }
