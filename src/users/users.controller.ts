@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Users } from './entities/user.entity';
+import { users } from '@prisma/client';
 @ApiBearerAuth()
 @ApiTags('Users')
 @Controller('users')
@@ -22,27 +14,33 @@ export class UsersController {
    * Get All Users
    */
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  public async getAll(): Promise<Array<UserDto>> {
+    const users: Array<Users> = await this.usersService.getAll();
+    return users.map((user) => UserDto.Load(user));
   }
 
   /**
-   * Get All Users By Id
+   * Get All Users By id
    * @param id
    */
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  public async getOne(@Param('id') id: string) {
+    const user: Users = await this.usersService.getOne(id);
+    return UserDto.Load(user);
   }
 
   /**
    * Update Users
    * @param id
-   * @param updateUserDto
+   * @param userDto
    */
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  public async update(
+    @Param('id') id: string,
+    @Body() userDto: UserDto,
+  ): Promise<UserDto> {
+    const user: Users = await this.usersService.update(id, userDto);
+    return UserDto.Load(user);
   }
 
   /**
@@ -50,7 +48,8 @@ export class UsersController {
    * @param id
    */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  public async remove(@Param('id') id: string): Promise<boolean> {
+    const user = await this.usersService.remove(id);
+    return user != null;
   }
 }
