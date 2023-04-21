@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model users {
+  usr_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usr_username  String?
+  usr_email     String   @unique
+  usr_password  String
+  usr_refreshToken String?
+  profile       profile? @relation(fields: [usr_profile], references: [prf_id])
+  usr_createdAt DateTime @default(now())
+  usr_updatedAt DateTime @updatedAt
+
+  person      person? @relation(fields: [usr_person], references: [per_id])
+  usr_person  String?  @unique @db.Uuid
+  usr_profile String? @db.Uuid
+}
+
+model person {
+  per_id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  per_firstname String?
+  per_lastname  String?
+  per_civility  civility?
+  per_createdAt DateTime  @default(now())
+  per_updatedAt DateTime  @updatedAt
+
+  followers follow[] @relation("followers")
+  following follow[] @relation("following")
+
+  users         users?
+  comments      comment[]
+  posts         post[]
+  like_comment  like_comment[]
+  like_post     like_post[]
+  post_category post_category[]
+}
+
+model post {
+  pst_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pst_title     String
+  pst_text      String
+  pst_createdAt DateTime @default(now())
+  pst_updatedAt DateTime @updatedAt
+
+  person     person      @relation(fields: [pst_person], references: [per_id])
+  comment    comment[]
+  pst_person String      @db.Uuid
+  like_post  like_post[]
+
+  picture     picture? @relation(fields: [pst_picture], references: [pct_id])
+  pst_picture String?  @db.Uuid
+  video       video?   @relation(fields: [pst_video], references: [vdo_id])
+  pst_video   String?  @db.Uuid
+}
+
+model comment {
+  cmt_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cmt_text      String
+  cmt_createdAt DateTime @default(now())
+  cmt_updatedAt DateTime @updatedAt
+
+  person      person         @relation(fields: [cmt_person], references: [per_id])
+  cmt_person  String         @db.Uuid
+  post        post           @relation(fields: [cmt_comment], references: [pst_id])
+  cmt_comment String         @db.Uuid
+  likes       like_comment[]
+}
+
+model like_comment {
+  lkc_id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  comment     comment @relation(fields: [lke_comment], references: [cmt_id])
+  lke_comment String  @db.Uuid
+  person      person  @relation(fields: [lkc_person], references: [per_id])
+  lkc_person  String  @db.Uuid
+}
+
+model like_post {
+  lkp_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  post       post   @relation(fields: [lkp_post], references: [pst_id])
+  lkp_post   String @db.Uuid
+  person     person @relation(fields: [lkp_person], references: [per_id])
+  lkp_person String @db.Uuid
+}
+
+model follow {
+  flw_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followers     person?  @relation("followers", fields: [flw_followers], references: [per_id])
+  flw_followers String?  @db.Uuid
+  following     person?  @relation("following", fields: [flw_following], references: [per_id])
+  flw_following String?  @db.Uuid
+  flw_createdAt DateTime @default(now())
+  flw_updatedAt DateTime @updatedAt
+}
+
+model profile {
+  prf_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prf_label     String
+  prf_createdAt DateTime @default(now())
+  prf_updatedAt DateTime @updatedAt
+  picture       picture  @relation(fields: [picturePct_id], references: [pct_id])
+
+  users         users[]
+  picturePct_id String  @db.Uuid
+}
+
+model picture {
+  pct_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pct_name String
+  pct_path String
+  pct_size String
+  pct_type String
+
+  pct_createdAt DateTime  @default(now())
+  pct_updatedAt DateTime  @updatedAt
+  posts         post[]
+  profiles      profile[]
+}
+
+model video {
+  vdo_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vdo_name String
+  vdo_path String
+  vdo_size String
+  vdo_type String
+
+  vdo_createdAt DateTime @default(now())
+  vdo_updatedAt DateTime @updatedAt
+  posts         post[]
+}
+
+model category {
+  ctg_id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ctg_label String
+
+  ctg_createdAt    DateTime        @default(now())
+  ctg_updatedAt    DateTime        @updatedAt
+  post_categoryies post_category[]
+}
+
+model post_category {
+  pcg_id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person     person @relation(fields: [pcg_person], references: [per_id])
+  pcg_person String @db.Uuid
+
+  category     category @relation(fields: [pcg_category], references: [ctg_id])
+  pcg_category String   @db.Uuid
+}
+
+enum civility {
+  M
+  F
+}
