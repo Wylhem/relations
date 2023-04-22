@@ -24,6 +24,20 @@ export class PersonService {
       },
     });
   }
+  /**
+   * Get All Post From a person
+   * @param id PersonId
+   */
+  public async getAllFromPerson(id: string) {
+    return await this.prisma.person.findFirst({
+      where: {
+        per_id: id,
+      },
+      include: {
+        posts: true,
+      },
+    });
+  }
 
   public async create(personDto: PersonDto): Promise<Person> {
     return await this.prisma.person.create({

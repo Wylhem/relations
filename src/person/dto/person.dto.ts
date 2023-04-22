@@ -1,8 +1,10 @@
 import { BaseDto } from '../../shared/base/base.dto';
-import { civility, users } from '@prisma/client';
+import { civility, post, users } from '@prisma/client';
 import { Person } from '../entity/person.entitiy';
 import { UserDto } from '../../users/dto/user.dto';
 import { Users } from '../../users/entities/user.entity';
+import { PostEntity } from '../../post/entity/post.entity';
+import { PostDto } from '../../post/dto/post.dto';
 
 export class PersonDto extends BaseDto {
   /**
@@ -26,6 +28,11 @@ export class PersonDto extends BaseDto {
    */
   users?: UserDto;
 
+  /**
+   * Gets or sets Posts
+   */
+  posts?: Array<PostDto>;
+
   public static Load(person: Person): PersonDto {
     return {
       id: person.per_id,
@@ -33,6 +40,9 @@ export class PersonDto extends BaseDto {
       lastname: person.per_lastname,
       civility: person.per_civility,
       users: person.users ? UserDto.Load(person.users) : null,
+      posts: person.posts
+        ? person.posts.map((post) => PostDto.Load(post))
+        : null,
       createdAt: person.per_createdAt,
       updatedAt: person.per_updatedAt,
     };

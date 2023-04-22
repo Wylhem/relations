@@ -42,6 +42,13 @@ export class PersonController {
   }
 
   /**
+   * Gets All Post from users
+   * @constructor
+   */
+  @Get(':id/posts')
+  public async GetAllPosts(@Param('id') id: string) {}
+
+  /**
    * Create new person
    * @param personDto
    */
