@@ -1,4 +1,5 @@
 import { users } from '@prisma/client';
+import { Person } from '../../person/entity/person.entitiy';
 
 export class Users implements users {
   usr_id: string;
@@ -10,4 +11,6 @@ export class Users implements users {
   usr_updatedAt: Date;
   usr_person: string;
   usr_profile: string;
+
+  person?: Person;
 }
