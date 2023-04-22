@@ -40,6 +40,21 @@ export class PersonService {
   }
 
   /**
+   * Get All LikePost From a person
+   * @param id PersonId
+   */
+  public async getAllLikePostFromPerson(id: string) {
+    return await this.prisma.person.findFirst({
+      where: {
+        per_id: id,
+      },
+      include: {
+        like_post: true,
+      },
+    });
+  }
+
+  /**
    * Get All Comment From a person
    * @param id PersonId
    */
