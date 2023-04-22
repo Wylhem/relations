@@ -1,5 +1,6 @@
 import { civility, person } from '@prisma/client';
 import { Users } from '../../users/entities/user.entity';
+import { PostEntity } from '../../post/entity/post.entity';
 
 export class Person implements person {
   per_id: string;
@@ -10,4 +11,6 @@ export class Person implements person {
   per_updatedAt: Date;
 
   users?: Users;
+
+  posts?: Array<PostEntity>;
 }
