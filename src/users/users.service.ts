@@ -18,20 +18,13 @@ export class UsersService {
   }
 
   public async getAll(): Promise<Array<Users>> {
-    return await this.prismaService.users.findMany({
-      include: {
-        person: true,
-      },
-    });
+    return await this.prismaService.users.findMany();
   }
 
   public async getOne(id: string): Promise<Users> {
     return await this.prismaService.users.findFirst({
       where: {
         usr_id: id,
-      },
-      include: {
-        person: true,
       },
     });
   }
@@ -44,9 +37,6 @@ export class UsersService {
       data: {
         usr_email: userDto.email,
         usr_username: userDto.username,
-      },
-      include: {
-        person: true,
       },
     });
   }

@@ -4,7 +4,7 @@ import { AuthDto } from './dto/auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AST } from 'eslint';
 import Token = AST.Token;
-import { Tokens } from './types/tokens.dto';
+import { Tokens } from './types/tokens.type';
 import { PublicDecorator } from '../shared/decorator/public.decorator';
 import { RegisterDto } from './dto/register.dto';
 
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   /**
-   * Login an Existent users
+   * Login Existant users
    */
   @PublicDecorator()
   @Post('/login')
