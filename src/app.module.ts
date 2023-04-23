@@ -7,9 +7,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './shared/guards/at.guard';
 import { PostModule } from './post/post.module';
 import { MeModule } from './me/me.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, PersonModule, PostModule, MeModule],
+  imports: [PrismaModule, UsersModule, AuthModule, PersonModule, PostModule, MeModule, CategoryModule],
   controllers: [],
   providers: [
     {
