@@ -36,7 +36,7 @@ export class PictureController {
   }
 
   /**
-   * Upload an image
+   * Upload an images
    * @param file
    */
   @Post('file')
