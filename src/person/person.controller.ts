@@ -14,6 +14,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
 import { person } from '@prisma/client';
+import { FollowEntity } from "../follow/entities/follow.entity";
+import { FollowDto } from "../follow/dto/follow.dto";
 
 @ApiBearerAuth()
 @ApiTags('Person')
@@ -47,6 +49,15 @@ export class PersonController {
    */
   @Get(':id/posts')
   public async GetAllPosts(@Param('id') id: string) {}
+
+  /**
+   * Gets All Followers/Following from users
+   * @constructor
+   */
+  @Get(':id/follows')
+  public async GetAllFollows(@Param('id') id: string) {
+
+  }
 
   /**
    * Create new person

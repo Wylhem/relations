@@ -39,6 +39,22 @@ export class PersonService {
     });
   }
 
+  /**
+   * Get All Follow From a person
+   * @param id PersonId
+   */
+  public async getAllFollowFromPerson(id: string) {
+    return await this.prisma.person.findFirst({
+      where: {
+        per_id: id,
+      },
+      include: {
+        followers: true,
+        following: true,
+      },
+    });
+  }
+
   public async create(personDto: PersonDto): Promise<Person> {
     return await this.prisma.person.create({
       data: {
