@@ -9,6 +9,7 @@ import { PostModule } from './post/post.module';
 import { MeModule } from './me/me.module';
 import { CommentModule } from './comment/comment.module';
 import { CategoryModule } from './category/category.module';
+import { PictureModule } from './picture/picture.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CategoryModule } from './category/category.module';
     MeModule,
     CategoryModule,
     CommentModule,
+    PictureModule,
   ],
   controllers: [],
   providers: [
