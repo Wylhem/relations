@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { LikePostDto } from './dto/like-post.dto';
 import { PrismaService } from "../prisma/prisma.service";
 import { LikePostEntity } from "./entities/like-post.entity";
+import { PostDto } from "../post/dto/post.dto";
+import { PostEntity } from "../post/entity/post.entity";
 
 @Injectable()
 export class LikePostService {
@@ -12,12 +14,33 @@ export class LikePostService {
   public async create(likePostDto: LikePostDto): Promise<LikePostEntity> {
     return await this.prisma.like_post.create({
       data: {
-        lkp_post: likePostDto.post_l,
+        lkp_post: likePostDto.post.id,
         lkp_person: likePostDto.person.id,
       },
       include: {
         person: true,
-        post: true
+        post: true,
+      },
+    });
+  }
+
+  public async createNewLikePostFromPerson(
+    idPost: string,
+    idPerson: string,
+    likePostDto: LikePostDto,
+  ): Promise<LikePostEntity> {
+    return await this.prisma.like_post.create({
+      data: {
+        post:{
+          connect: {
+            pst_id: idPost
+          }
+        },
+        person: {
+          connect: {
+            per_id: idPerson,
+          },
+        },
       },
     });
   }

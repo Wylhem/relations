@@ -16,6 +16,9 @@ import { PostDto } from '../post/dto/post.dto';
 import { PostEntity } from '../post/entity/post.entity';
 import { UsersService } from '../users/users.service';
 import { Users } from '../users/entities/user.entity';
+import { LikePostDto } from "../like_post/dto/like-post.dto";
+import { LikePostEntity } from "../like_post/entities/like-post.entity";
+import { LikePostService } from "../like_post/like-post.service";
 
 @ApiBearerAuth()
 @ApiTags('Me')
@@ -26,6 +29,7 @@ export class MeController {
     private readonly postService: PostService,
     private readonly personService: PersonService,
     private readonly userService: UsersService,
+    private readonly likePostService: LikePostService
   ) {}
 
   @Get()
@@ -38,6 +42,10 @@ export class MeController {
     return PersonDto.Load(person);
   }
 
+  /**
+   * Get All my  posts
+   * @param id
+   */
   @Get('/posts')
   public async getMyPosts(@GetCurrentUserId() id: string): Promise<PersonDto> {
     const user: Users = await this.userService.getOne(id);
@@ -45,6 +53,22 @@ export class MeController {
       throw new ForbiddenException();
     }
     const person: Person = await this.personService.getAllFromPerson(
+      user.person.per_id,
+    );
+    return PersonDto.Load(person);
+  }
+
+  /**
+   * Get All my like post
+   * @param id
+   */
+  @Get('/likePosts')
+  public async getMyLikePosts(@GetCurrentUserId() id: string): Promise<PersonDto> {
+    const user: Users = await this.userService.getOne(id);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    const person: Person = await this.personService.getAllLikePostFromPerson(
       user.person.per_id,
     );
     return PersonDto.Load(person);
@@ -69,5 +93,27 @@ export class MeController {
       postDto,
     );
     return PostDto.Load(post);
+  }
+
+  /**
+   * Create A new like post
+   * @param id
+   * @param likePostDto
+   */
+  @Post('/likePost')
+  public async createNewLikePost(
+    @GetCurrentUserId() id: string,
+    @Body() likePostDto: LikePostDto,
+  ): Promise<LikePostDto> {
+    const user: Users = await this.userService.getOne(id);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    const likePost: LikePostEntity = await this.likePostService.createNewLikePostFromPerson(
+      likePostDto.post.id,
+      user.person.per_id,
+      likePostDto,
+    );
+    return LikePostDto.Load(likePost);
   }
 }

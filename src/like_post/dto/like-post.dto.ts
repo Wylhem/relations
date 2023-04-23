@@ -11,20 +11,15 @@ export class LikePostDto extends BaseDto{
   person?: PersonDto;
 
   /**
-   * Gets or sets person
-   */
-  post_l: string;
-
-  /**
-   * Gets or sets person
+   * Gets or sets post
    */
   post?: PostDto;
 
   public static Load(likePost: LikePostEntity): LikePostDto {
     return {
-      createdAt: undefined, updatedAt: undefined,
       id: likePost.lkp_id,
-      post_l: likePost.lkp_post,
+      createdAt: likePost.lkp_createdAt,
+      updatedAt: likePost.lkp_updatedAt,
       post: likePost.post ? PostDto.Load(likePost.post) : null,
       person: likePost.person ? PersonDto.Load(likePost.person) : null
     };
