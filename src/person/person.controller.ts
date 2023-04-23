@@ -49,6 +49,13 @@ export class PersonController {
   public async GetAllPosts(@Param('id') id: string) {}
 
   /**
+   * Gets All Comment from users
+   * @constructor
+   */
+  @Get(':id/comments')
+  public async GetAllComments(@Param('id') id: string) {}
+
+  /**
    * Create new person
    * @param personDto
    */
