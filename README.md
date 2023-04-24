@@ -5,69 +5,69 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Installation et configuration
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Ouvrez un terminal à l'endroit où vous voulez placer le projet et clonez le code depuis GitHub à l'aide de la commande suivante :
 
-## Installation
-
-```bash
-$ npm install
+```shell
+git clone https://github.com/Wylhem/relations.git
 ```
 
-## Running the app
+## Installation des dépendances
 
-```bash
-# development
-$ npm run start
+Assurez vous de vous être placer dans le dossier du projet.
 
-# watch mode
-$ npm run start:dev
+Ouvrez un terminal et tapez les commandes suivantes
 
-# production mode
-$ npm run start:prod
+```shell
+npm install
 ```
 
-## Test
+## Fichiers à modifier
 
-```bash
-# unit tests
-$ npm run test
+Dans le dossier ".env", vous trouverez le code suivant :
 
-# e2e tests
-$ npm run test:e2e
+```javascript
 
-# test coverage
-$ npm run test:cov
+DATABASE_URL="postgresql://postgres:root@localhost:5432/relation?schema=public"
+
+SECRET_TOKEN="àDefinir"
+SECRET_TOKEN="àDefinir"
+
+PORT: 4490
+
 ```
 
-## Support
+Modifiez la variable ```DATABASE_URL```  database URL pour qu'elle corresponde à la base de données que vous utilisez, cette url suit le format suivant:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+![image](https://user-images.githubusercontent.com/85617567/234087727-1633c2a3-3ea3-4b4c-bb6d-5be3dee93c5d.png)
 
-## Stay in touch
+Définissez un ```SECRET_TOKEN et SECRET_TOKEN```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Notre application utilise prisma pour requêter la base de données, pour le bon fonctionnement vous devez dans un premier temps créer une migration de la base 
+de données, puis la synchroniser avec votre base.
 
-## License
+Exécutez les commandes suivantes: 
 
-Nest is [MIT licensed](LICENSE).
+```shall
+
+npx prisma migrate dev
+
+npx prisma db push
+
+```
+
+# Lancement de l'application
+
+Dans le terminal, n'oubliez pas de vérifier que vous êtes toujours sur le projet puis tapez: 
+
+```shell
+nest start
+```
+Votre application est maintenant lancée, comme affichez sur le terminal vous pourrez accéder à la documentation Swagger qui vous pemettra de tester les différentes fonctionnalités: http://localhost:4490/docs
+
+La plupart des routes étant privées, vous devrez d'abord récupérer un access_token avec la route ```shell /auth ``` puis vous enregistrer avec la route ```shell /auth/login ```, reportez le dans la section Authorize  ![image](https://user-images.githubusercontent.com/85617567/234094332-be037cd2-5f9a-4f34-a7fc-9e333c11d4f5.png)
+
+Connectez votre nouvel utilisateur avec la route /auth/login et profitez de l'applciation !
+
