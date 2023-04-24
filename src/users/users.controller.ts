@@ -1,4 +1,12 @@
-import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -26,6 +34,9 @@ export class UsersController {
   @Get(':id')
   public async getOne(@Param('id') id: string) {
     const user: Users = await this.usersService.getOne(id);
+    if (!user) {
+      throw new NotFoundException();
+    }
     return UserDto.Load(user);
   }
 
@@ -40,6 +51,9 @@ export class UsersController {
     @Body() userDto: UserDto,
   ): Promise<UserDto> {
     const user: Users = await this.usersService.update(id, userDto);
+    if (!user) {
+      throw new NotFoundException();
+    }
     return UserDto.Load(user);
   }
 

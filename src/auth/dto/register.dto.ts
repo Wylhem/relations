@@ -1,11 +1,11 @@
 import { PartialType } from '@nestjs/swagger';
 import { AuthDto } from './auth.dto';
-import { IsNotEmpty } from 'class-validator';
+import { IsDefined } from 'class-validator';
 
 export class RegisterDto extends PartialType(AuthDto) {
   /**
    * Gets or sets username.
    */
-  @IsNotEmpty()
+  @IsDefined()
   username: string;
 }

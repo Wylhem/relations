@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Comment } from "./entities/comment.entity";
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Comment } from './entities/comment.entity';
 
 @ApiBearerAuth()
 @ApiTags('Comment')

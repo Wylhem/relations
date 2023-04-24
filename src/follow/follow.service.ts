@@ -88,18 +88,15 @@ export class FollowService {
     id: string,
     followDto: NewFollowDto,
   ): Promise<Follow> {
+    console.log(followDto);
     return await this.prisma.follow.create({
       data: {
-        follower: {
-          connect: {
-            per_id: id,
-          },
-        },
-        following: {
-          connect: {
-            per_id: followDto.following.id,
-          },
-        },
+        flw_follower: id,
+        flw_following: followDto.following,
+      },
+      include: {
+        follower: true,
+        following: true,
       },
     });
   }

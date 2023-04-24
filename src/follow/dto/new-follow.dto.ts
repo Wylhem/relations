@@ -1,8 +1,8 @@
 import { FollowDto } from './follow.dto';
 
-export type NewFollowDto = {
+export class NewFollowDto {
   /**
    * Gets or sets following
    */
-  following: FollowDto;
-};
+  following: string;
+}

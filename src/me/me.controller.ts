@@ -32,6 +32,13 @@ import { LikeCommentDto } from '../like-comment/dto/like-comment.dto';
 import { LikeCommentEntity } from '../like-comment/entities/like-comment.entity';
 import { LikeCommentService } from '../like-comment/like-comment.service';
 import { like_comment } from '@prisma/client';
+import { CommentDto } from '../comment/dto/comment.dto';
+import * as http from 'http';
+import { CommentService } from '../comment/comment.service';
+import { Comment } from '../comment/entities/comment.entity';
+import { use } from 'passport';
+import { NewLikeDto } from '../like_post/dto/newLike.dto';
+import { NewLikeCommentDto } from '../like-comment/dto/new-like-comment.dto';
 
 @ApiBearerAuth()
 @ApiTags('Me')
@@ -46,6 +53,7 @@ export class MeController {
     private readonly likeCommentService: LikeCommentService,
     private readonly followService: FollowService,
     private readonly categoryService: CategoryService,
+    private readonly commentService: CommentService,
   ) {}
 
   /**
@@ -58,6 +66,7 @@ export class MeController {
     if (!user.person) {
       throw new ForbiddenException();
     }
+
     const person = await this.personService.getOne(user.person.per_id);
     return PersonDto.Load(person);
   }
@@ -142,6 +151,30 @@ export class MeController {
   }
 
   /**
+   * Create new Post
+   * @param id
+   * @param commentDto
+   */
+  @Post('/post/comment')
+  public async createNewComment(
+    @GetCurrentUserId() id: string,
+    @Body() commentDto: CommentDto,
+  ) {
+    const user: Users = await this.userService.getOne(id);
+    if (!user.person) {
+      throw new ForbiddenException();
+    }
+
+    const comment = await this.commentService.createNewCommentFromPerson(
+      user.person.per_id,
+      commentDto,
+    );
+    if (!comment) {
+      throw new BadRequestException();
+    }
+    return CommentDto.Load(comment);
+  }
+  /**
    * Create A new post
    * @param id
    * @param postDto
@@ -173,10 +206,10 @@ export class MeController {
    * @param id
    * @param likeCommentDto
    */
-  @Post('/likePost')
+  @Post('/like/comment')
   public async createNewLikeComment(
     @GetCurrentUserId() id: string,
-    @Body() likeCommentDto: LikeCommentDto,
+    @Body() likeCommentDto: NewLikeCommentDto,
   ): Promise<LikeCommentDto> {
     const user: Users = await this.userService.getOne(id);
     if (!user.person) {
@@ -184,7 +217,7 @@ export class MeController {
     }
     const likeComment: LikeCommentEntity =
       await this.likeCommentService.createNewLikeCommentFromPerson(
-        likeCommentDto.comment.id,
+        likeCommentDto.comment,
         user.person.per_id,
       );
     return LikeCommentDto.Load(likeComment);
@@ -195,10 +228,10 @@ export class MeController {
    * @param id
    * @param likePostDto
    */
-  @Post('/likePost')
+  @Post('/like/post')
   public async createNewLikePost(
     @GetCurrentUserId() id: string,
-    @Body() likePostDto: LikePostDto,
+    @Body() likePostDto: NewLikeDto,
   ): Promise<LikePostDto> {
     const user: Users = await this.userService.getOne(id);
     if (!user.person) {
@@ -206,7 +239,7 @@ export class MeController {
     }
     const likePost: LikePostEntity =
       await this.likePostService.createNewLikePostFromPerson(
-        likePostDto.post.id,
+        likePostDto.post,
         user.person.per_id,
       );
     return LikePostDto.Load(likePost);
@@ -255,15 +288,15 @@ export class MeController {
    */
   @Post('/following')
   public async follow(
-    @GetCurrentUserId() id: string,
     @Body() followDto: NewFollowDto,
-  ) {
+    @GetCurrentUserId() id: string,
+  ): Promise<FollowDto> {
     const user: Users = await this.userService.getOne(id);
     if (!user.person) {
       throw new ForbiddenException();
     }
     const follow: Follow = await this.followService.createFromPerson(
-      id,
+      user.person.per_id,
       followDto,
     );
     return FollowDto.Load(follow);
