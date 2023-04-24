@@ -13,55 +13,52 @@ datasource db {
 }
 
 model users {
-  usr_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usr_username  String?
-  usr_email     String   @unique
-  usr_password  String
+  usr_id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usr_username     String?
+  usr_email        String   @unique
+  usr_password     String
+  usr_createdAt    DateTime @default(now())
+  usr_updatedAt    DateTime @updatedAt
+  usr_person       String?  @unique @db.Uuid
+  usr_profile      String?  @db.Uuid
   usr_refreshToken String?
-  profile       profile? @relation(fields: [usr_profile], references: [prf_id])
-  usr_createdAt DateTime @default(now())
-  usr_updatedAt DateTime @updatedAt
-
-  person      person? @relation(fields: [usr_person], references: [per_id])
-  usr_person  String?  @unique @db.Uuid
-  usr_profile String? @db.Uuid
+  person           person?  @relation(fields: [usr_person], references: [per_id])
+  profile          profile? @relation(fields: [usr_profile], references: [prf_id])
 }
 
 model person {
-  per_id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  per_id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   per_firstname String?
   per_lastname  String?
   per_civility  civility?
-  per_createdAt DateTime  @default(now())
-  per_updatedAt DateTime  @updatedAt
-
-  followers follow[] @relation("followers")
-  following follow[] @relation("following")
-
+  per_createdAt DateTime       @default(now())
+  per_updatedAt DateTime       @updatedAt
+  avatar        picture?       @relation(fields: [per_picture], references: [pct_id])
+  follower      follow[]       @relation("follower")
+  following     follow[]       @relation("following")
   users         users?
   comments      comment[]
   posts         post[]
   like_comment  like_comment[]
   like_post     like_post[]
-  post_category post_category[]
+  per_picture   String?        @unique @db.Uuid
 }
 
 model post {
-  pst_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pst_id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   pst_title     String
   pst_text      String
-  pst_createdAt DateTime @default(now())
-  pst_updatedAt DateTime @updatedAt
-
-  person     person      @relation(fields: [pst_person], references: [per_id])
-  comment    comment[]
-  pst_person String      @db.Uuid
-  like_post  like_post[]
-
-  picture     picture? @relation(fields: [pst_picture], references: [pct_id])
-  pst_picture String?  @db.Uuid
-  video       video?   @relation(fields: [pst_video], references: [vdo_id])
-  pst_video   String?  @db.Uuid
+  pst_createdAt DateTime        @default(now())
+  pst_updatedAt DateTime        @updatedAt
+  pst_person    String          @db.Uuid
+  pst_picture   String?         @db.Uuid
+  pst_video     String?         @db.Uuid
+  comment       comment[]
+  like_post     like_post[]
+  person        person          @relation(fields: [pst_person], references: [per_id])
+  picture       picture?        @relation(fields: [pst_picture], references: [pct_id])
+  video         video?          @relation(fields: [pst_video], references: [vdo_id])
+  post_category post_category[]
 }
 
 model comment {
@@ -70,34 +67,37 @@ model comment {
   cmt_createdAt DateTime @default(now())
   cmt_updatedAt DateTime @updatedAt
 
-  person      person         @relation(fields: [cmt_person], references: [per_id])
-  cmt_person  String         @db.Uuid
-  post        post           @relation(fields: [cmt_comment], references: [pst_id])
-  cmt_comment String         @db.Uuid
-  likes       like_comment[]
+  person     person         @relation(fields: [cmt_person], references: [per_id])
+  cmt_person String         @db.Uuid
+  post       post           @relation(fields: [cmt_post], references: [pst_id])
+  cmt_post   String         @db.Uuid
+  likes      like_comment[]
 }
 
 model like_comment {
-  lkc_id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  comment     comment @relation(fields: [lke_comment], references: [cmt_id])
-  lke_comment String  @db.Uuid
-  person      person  @relation(fields: [lkc_person], references: [per_id])
-  lkc_person  String  @db.Uuid
+  lkc_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lke_comment   String   @db.Uuid
+  lkc_person    String   @db.Uuid
+  lck_updatedAt DateTime @updatedAt
+  lkc_createdAt DateTime @default(now())
+  person        person   @relation(fields: [lkc_person], references: [per_id])
+  comment       comment  @relation(fields: [lke_comment], references: [cmt_id])
 }
 
 model like_post {
-  lkp_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-
-  post       post   @relation(fields: [lkp_post], references: [pst_id])
-  lkp_post   String @db.Uuid
-  person     person @relation(fields: [lkp_person], references: [per_id])
-  lkp_person String @db.Uuid
+  lkp_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lkp_post      String   @db.Uuid
+  lkp_person    String   @db.Uuid
+  lkp_createdAt DateTime @default(now())
+  lkp_updatedAt DateTime @updatedAt
+  person        person   @relation(fields: [lkp_person], references: [per_id])
+  post          post     @relation(fields: [lkp_post], references: [pst_id])
 }
 
 model follow {
   flw_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  followers     person?  @relation("followers", fields: [flw_followers], references: [per_id])
-  flw_followers String?  @db.Uuid
+  follower      person?  @relation("follower", fields: [flw_follower], references: [per_id])
+  flw_follower  String?  @db.Uuid
   following     person?  @relation("following", fields: [flw_following], references: [per_id])
   flw_following String?  @db.Uuid
   flw_createdAt DateTime @default(now())
@@ -109,30 +109,27 @@ model profile {
   prf_label     String
   prf_createdAt DateTime @default(now())
   prf_updatedAt DateTime @updatedAt
-  picture       picture  @relation(fields: [picturePct_id], references: [pct_id])
-
   users         users[]
-  picturePct_id String  @db.Uuid
 }
 
 model picture {
   pct_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pct_name String
-  pct_path String
-  pct_size String
-  pct_type String
+  pct_name String?
+  pct_path String?
+  pct_size Int?
+  pct_type String?
 
-  pct_createdAt DateTime  @default(now())
-  pct_updatedAt DateTime  @updatedAt
+  pct_createdAt DateTime @default(now())
+  pct_updatedAt DateTime? @updatedAt
   posts         post[]
-  profiles      profile[]
+  person        person?
 }
 
 model video {
   vdo_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   vdo_name String
   vdo_path String
-  vdo_size String
+  vdo_size Int?
   vdo_type String
 
   vdo_createdAt DateTime @default(now())
@@ -142,20 +139,23 @@ model video {
 
 model category {
   ctg_id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ctg_label String
+  ctg_label String @unique
 
-  ctg_createdAt    DateTime        @default(now())
-  ctg_updatedAt    DateTime        @updatedAt
-  post_categoryies post_category[]
+  ctg_createdAt   DateTime        @default(now())
+  ctg_updatedAt   DateTime        @updatedAt
+  post_categories post_category[]
 }
 
 model post_category {
-  pcg_id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  person     person @relation(fields: [pcg_person], references: [per_id])
-  pcg_person String @db.Uuid
+  pcg_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  post   post?  @relation(fields: [pgc_post], references: [pst_id])
 
   category     category @relation(fields: [pcg_category], references: [ctg_id])
   pcg_category String   @db.Uuid
+
+  pcg_createdAt DateTime @default(now())
+  pcg_updatedAt DateTime @updatedAt
+  pgc_post      String?  @db.Uuid
 }
 
 enum civility {

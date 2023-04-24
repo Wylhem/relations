@@ -1,9 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Tokens } from './types/tokens.type';
+import { Tokens } from './types/tokens.dto';
 import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
@@ -87,6 +91,9 @@ export class AuthService {
         usr_email: authDto.email,
       },
     });
+    if (!user) {
+      throw new NotFoundException();
+    }
     const passwordMatches = await bcrypt.compare(
       authDto.password,
       user.usr_password,
