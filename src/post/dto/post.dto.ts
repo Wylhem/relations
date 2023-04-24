@@ -32,11 +32,14 @@ export class PostDto extends BaseDto {
    */
   categories?: Array<PostCategoryDto>;
 
+  nbLikes?: number;
+
   public static Load(post: PostEntity): PostDto {
     return {
       id: post.pst_id,
       title: post.pst_title,
       text: post.pst_text,
+      nbLikes: post.nbLikes,
       person: post.person ? PersonDto.Load(post.person) : null,
       picture: post.picture ? PictureDto.Load(post.picture) : null,
       categories: post.post_category

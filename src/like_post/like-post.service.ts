@@ -22,6 +22,13 @@ export class LikePostService {
     });
   }
 
+  public async countLikePost(idPost: string): Promise<number> {
+    return await this.prisma.like_post.count({
+      where: {
+        lkp_post: idPost,
+      },
+    });
+  }
   public async createNewLikePostFromPerson(
     idPost: string,
     idPerson: string,
