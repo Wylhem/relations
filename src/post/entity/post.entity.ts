@@ -18,4 +18,9 @@ export class PostEntity implements post {
   picture?: PictureEntity;
 
   post_category?: Array<PostCategory>;
+
+  /**
+   * /!\ Calculated Field.
+   */
+  nbLikes?: number;
 }

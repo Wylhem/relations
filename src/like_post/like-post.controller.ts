@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LikePostService } from './like-post.service';
 import { LikePostDto } from './dto/like-post.dto';
-import { LikePostEntity } from "./entities/like-post.entity";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { LikePostEntity } from './entities/like-post.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('LikePost')
@@ -15,7 +23,8 @@ export class LikePostController {
    */
   @Get()
   public async getAll(): Promise<Array<LikePostDto>> {
-    const likePosts: Array<LikePostEntity> = await this.likePostService.getAll();
+    const likePosts: Array<LikePostEntity> =
+      await this.likePostService.getAll();
     return likePosts.map((likePosts) => LikePostDto.Load(likePosts));
   }
 
@@ -35,10 +44,20 @@ export class LikePostController {
    */
   @Post()
   public async create(@Body() likePostDto: LikePostDto): Promise<LikePostDto> {
-    const likePost: LikePostEntity = await this.likePostService.create(likePostDto);
+    const likePost: LikePostEntity = await this.likePostService.create(
+      likePostDto,
+    );
     return LikePostDto.Load(likePost);
   }
 
+  /**
+   * Count number of like of specific posts.
+   * @param id
+   */
+  @Get(':id/count')
+  public async countNumberLikedPosts(@Param('id') id: string): Promise<number> {
+    return await this.likePostService.countLikePost(id);
+  }
   /**
    * Delete a post
    * @param id
