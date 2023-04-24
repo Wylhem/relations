@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
@@ -87,6 +91,9 @@ export class AuthService {
         usr_email: authDto.email,
       },
     });
+    if (!user) {
+      throw new NotFoundException();
+    }
     const passwordMatches = await bcrypt.compare(
       authDto.password,
       user.usr_password,

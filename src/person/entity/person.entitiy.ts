@@ -2,9 +2,12 @@ import { civility, person } from '@prisma/client';
 import { Users } from '../../users/entities/user.entity';
 import { PostEntity } from '../../post/entity/post.entity';
 import { LikePostEntity } from "../../like_post/entities/like-post.entity";
-import { Comment } from "../../comment/entities/comment.entity";
+import { Comment } from '../../comment/entities/comment.entity';
+import { Follow } from '../../follow/entity/follow.entity';
+import { PictureEntity } from '../../picture/entity/picture.entity';
 
 export class Person implements person {
+  per_picture: string;
   per_id: string;
   per_firstname: string;
   per_lastname: string;
@@ -19,4 +22,10 @@ export class Person implements person {
   likePosts?: Array<LikePostEntity>;
 
   comments?: Array<Comment>;
+
+  follower?: Array<Follow>;
+
+  following?: Array<Follow>;
+
+  picture?: PictureEntity;
 }

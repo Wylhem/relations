@@ -1,8 +1,7 @@
 import { BaseDto } from '../../shared/base/base.dto';
 import { Comment } from '../entities/comment.entity';
 import { PersonDto } from '../../person/dto/person.dto';
-
-
+import { PostDto } from '../../post/dto/post.dto';
 
 export class CommentDto extends BaseDto {
   /**
@@ -10,11 +9,7 @@ export class CommentDto extends BaseDto {
    */
   text: string;
 
-  /**
-   * Gets or sets comment.
-   */
-  comment: string;
-
+  post?: PostDto;
 
   /**
    * Gets or sets Person.
@@ -27,7 +22,7 @@ export class CommentDto extends BaseDto {
       text: comment.cmt_text,
       createdAt: comment.cmt_createdAt,
       updatedAt: comment.cmt_updatedAt,
-      comment: comment.cmt_comment,
+      post: comment.post ? PostDto.Load(comment.post) : null,
       person: comment.person ? PersonDto.Load(comment.person) : null,
     };
   }

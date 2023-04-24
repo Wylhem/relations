@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
@@ -6,7 +9,7 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [uuid_ossp(map: "uuid-ossp")]
+  extensions = [uuidOssp(map: "uuid-ossp")]
 }
 
 model users {
@@ -30,14 +33,16 @@ model person {
   per_civility  civility?
   per_createdAt DateTime        @default(now())
   per_updatedAt DateTime        @updatedAt
-  comments      comment[]
-  followers     follow[]        @relation("followers")
+  avatar        picture?        @relation(fields: [per_picture], references: [pct_id])
+  follower      follow[]        @relation("follower")
   following     follow[]        @relation("following")
+  users         users?
+  comments      comment[]
+  posts         post[]
   like_comment  like_comment[]
   like_post     like_post[]
-  posts         post[]
   post_category post_category[]
-  users         users?
+  per_picture   String?         @unique @db.Uuid
 }
 
 model post {
@@ -59,13 +64,14 @@ model post {
 model comment {
   cmt_id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   cmt_text      String
-  cmt_createdAt DateTime       @default(now())
-  cmt_updatedAt DateTime       @updatedAt
-  cmt_person    String         @db.Uuid
-  cmt_comment   String         @db.Uuid
-  post          post           @relation(fields: [cmt_comment], references: [pst_id])
-  person        person         @relation(fields: [cmt_person], references: [per_id])
-  likes         like_comment[]
+  cmt_createdAt DateTime @default(now())
+  cmt_updatedAt DateTime @updatedAt
+
+  person     person         @relation(fields: [cmt_person], references: [per_id])
+  cmt_person String         @db.Uuid
+  post       post           @relation(fields: [cmt_post], references: [pst_id])
+  cmt_post   String         @db.Uuid
+  likes      like_comment[]
 }
 
 model like_comment {
@@ -90,12 +96,12 @@ model like_post {
 
 model follow {
   flw_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  flw_followers String?  @db.Uuid
+  follower      person?  @relation("follower", fields: [flw_follower], references: [per_id])
+  flw_follower  String?  @db.Uuid
+  following     person?  @relation("following", fields: [flw_following], references: [per_id])
   flw_following String?  @db.Uuid
   flw_createdAt DateTime @default(now())
   flw_updatedAt DateTime @updatedAt
-  followers     person?  @relation("followers", fields: [flw_followers], references: [per_id])
-  following     person?  @relation("following", fields: [flw_following], references: [per_id])
 }
 
 model profile {
@@ -103,48 +109,53 @@ model profile {
   prf_label     String
   prf_createdAt DateTime @default(now())
   prf_updatedAt DateTime @updatedAt
-  picturePct_id String   @db.Uuid
-  picture       picture  @relation(fields: [picturePct_id], references: [pct_id])
   users         users[]
 }
 
 model picture {
-  pct_id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pct_name      String
-  pct_path      String
-  pct_size      String
-  pct_type      String
-  pct_createdAt DateTime  @default(now())
-  pct_updatedAt DateTime  @updatedAt
+  pct_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pct_name String
+  pct_path String
+  pct_size Int?
+  pct_type String
+
+  pct_createdAt DateTime @default(now())
+  pct_updatedAt DateTime @updatedAt
   posts         post[]
-  profiles      profile[]
+  person        person?
 }
 
 model video {
-  vdo_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vdo_name      String
-  vdo_path      String
-  vdo_size      String
-  vdo_type      String
+  vdo_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vdo_name String
+  vdo_path String
+  vdo_size Int?
+  vdo_type String
+
   vdo_createdAt DateTime @default(now())
   vdo_updatedAt DateTime @updatedAt
   posts         post[]
 }
 
 model category {
-  ctg_id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ctg_label        String
-  ctg_createdAt    DateTime        @default(now())
-  ctg_updatedAt    DateTime        @updatedAt
-  post_categoryies post_category[]
+  ctg_id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ctg_label String
+
+  ctg_createdAt   DateTime        @default(now())
+  ctg_updatedAt   DateTime        @updatedAt
+  post_categories post_category[]
 }
 
 model post_category {
-  pcg_id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pcg_person   String   @db.Uuid
-  pcg_category String   @db.Uuid
+  pcg_id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person     person @relation(fields: [pcg_person], references: [per_id])
+  pcg_person String @db.Uuid
+
   category     category @relation(fields: [pcg_category], references: [ctg_id])
-  person       person   @relation(fields: [pcg_person], references: [per_id])
+  pcg_category String   @db.Uuid
+
+  pcg_createdAt DateTime @default(now())
+  pcg_updatedAt DateTime @updatedAt
 }
 
 enum civility {
