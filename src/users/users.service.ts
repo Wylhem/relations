@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Users } from './entities/user.entity';
+import { PersonDto } from '../person/dto/person.dto';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,38 @@ export class UsersService {
       data: {
         usr_email: userDto.email,
         usr_username: userDto.username,
+      },
+      include: {
+        person: true,
+      },
+    });
+  }
+
+  public async upsertMyProfile(
+    id: string,
+    personDto: PersonDto,
+  ): Promise<Users> {
+    return await this.prismaService.users.update({
+      where: {
+        usr_id: id,
+      },
+      data: {
+        person: {
+          upsert: {
+            create: {
+              per_firstname: personDto.firstname,
+              per_lastname: personDto.lastname,
+              per_civility: personDto.civility,
+              per_picture: personDto?.picture?.id ?? undefined,
+            },
+            update: {
+              per_firstname: personDto.firstname,
+              per_lastname: personDto.lastname,
+              per_civility: personDto.civility,
+              per_picture: personDto?.picture?.id ?? undefined,
+            },
+          },
+        },
       },
       include: {
         person: true,

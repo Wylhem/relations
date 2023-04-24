@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -20,6 +20,9 @@ export class AuthController {
   @Post()
   @PublicDecorator()
   public async register(@Body() registerDto: RegisterDto): Promise<Tokens> {
+    if (!registerDto) {
+      throw new BadRequestException();
+    }
     return await this.authService.register(registerDto);
   }
 
@@ -29,6 +32,9 @@ export class AuthController {
   @PublicDecorator()
   @Post('/login')
   public async login(@Body() authDto: AuthDto): Promise<Tokens> {
+    if (!authDto) {
+      throw new BadRequestException();
+    }
     return await this.authService.login(authDto);
   }
 }
