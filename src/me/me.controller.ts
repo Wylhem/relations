@@ -28,9 +28,9 @@ import { LikePostService } from '../like_post/like-post.service';
 import { CHECK_SHARP } from '../shared/constants';
 import { CategoryService } from '../category/category.service';
 import { CategoryEntity } from '../category/entities/category.entity';
-import { LikeCommentDto } from "../like-comment/dto/like-comment.dto";
-import { LikeCommentEntity } from "../like-comment/entities/like-comment.entity";
-import { LikeCommentService } from "../like-comment/like-comment.service";
+import { LikeCommentDto } from '../like-comment/dto/like-comment.dto';
+import { LikeCommentEntity } from '../like-comment/entities/like-comment.entity';
+import { LikeCommentService } from '../like-comment/like-comment.service';
 
 @ApiBearerAuth()
 @ApiTags('Me')
@@ -104,7 +104,7 @@ export class MeController {
     @GetCurrentUserId() id: string,
   ): Promise<PersonDto> {
     const user: Users = await this.userService.getOne(id);
-    if (!user) {
+    if (!user.person) {
       throw new ForbiddenException();
     }
     const person: Person = await this.personService.getAllLikePostFromPerson(
@@ -118,9 +118,11 @@ export class MeController {
    * @param id
    */
   @Get('/likeComments')
-  public async getMyLikeComments(@GetCurrentUserId() id: string): Promise<PersonDto> {
+  public async getMyLikeComments(
+    @GetCurrentUserId() id: string,
+  ): Promise<PersonDto> {
     const user: Users = await this.userService.getOne(id);
-    if (!user) {
+    if (!user.person) {
       throw new ForbiddenException();
     }
     const person: Person = await this.personService.getAllLikeCommentFromPerson(
@@ -159,7 +161,7 @@ export class MeController {
   /**
    * Create A new like post
    * @param id
-   * @param likePostDto
+   * @param likeCommentDto
    */
   @Post('/likePost')
   public async createNewLikeComment(
@@ -167,7 +169,7 @@ export class MeController {
     @Body() likeCommentDto: LikeCommentDto,
   ): Promise<LikeCommentDto> {
     const user: Users = await this.userService.getOne(id);
-    if (!user) {
+    if (!user.person) {
       throw new ForbiddenException();
     }
     const likeComment: LikeCommentEntity =
@@ -189,13 +191,14 @@ export class MeController {
     @Body() likePostDto: LikePostDto,
   ): Promise<LikePostDto> {
     const user: Users = await this.userService.getOne(id);
-    if (!user) {
+    if (!user.person) {
       throw new ForbiddenException();
     }
-    const likePost: LikePostEntity = await this.likePostService.createNewLikePostFromPerson(
-      likePostDto.post.id,
-      user.person.per_id,
-    );
+    const likePost: LikePostEntity =
+      await this.likePostService.createNewLikePostFromPerson(
+        likePostDto.post.id,
+        user.person.per_id,
+      );
     return LikePostDto.Load(likePost);
   }
 
