@@ -46,14 +46,13 @@ export class LikeCommentService {
   ): Promise<LikeCommentEntity> {
     return await this.prisma.like_comment.create({
       data: {
+        lke_comment: idComment,
+        lkc_person: idPerson,
+      },
+      include: {
         comment: {
-          connect: {
-            cmt_id: idComment,
-          },
-        },
-        person: {
-          connect: {
-            per_id: idPerson,
+          include: {
+            post: true,
           },
         },
       },

@@ -32,7 +32,11 @@ export class UsersService {
         usr_id: id,
       },
       include: {
-        person: true,
+        person: {
+          include: {
+            avatar: true,
+          },
+        },
       },
     });
   }
@@ -67,13 +71,13 @@ export class UsersService {
               per_firstname: personDto.firstname,
               per_lastname: personDto.lastname,
               per_civility: personDto.civility,
-              per_picture: personDto?.picture?.id ?? undefined,
+              per_picture: personDto?.avatar?.id ?? undefined,
             },
             update: {
               per_firstname: personDto.firstname,
               per_lastname: personDto.lastname,
               per_civility: personDto.civility,
-              per_picture: personDto?.picture?.id ?? undefined,
+              per_picture: personDto?.avatar?.id ?? undefined,
             },
           },
         },

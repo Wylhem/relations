@@ -28,22 +28,30 @@ export class CommentService {
     });
   }
 
-  /**public async createNewCommentFromPerson(
+  public async createNewCommentFromPerson(
     idPerson: string,
     commentDto: CommentDto,
   ): Promise<Comment> {
     return await this.prismaService.comment.create({
       data: {
-        cmt_comment: commentDto.comment,
         cmt_text: commentDto.text,
+        post: {
+          connect: {
+            pst_id: commentDto.post.id,
+          },
+        },
         person: {
           connect: {
             per_id: idPerson,
           },
         },
       },
+      include: {
+        person: true,
+        post: true,
+      },
     });
-  }**/
+  }
 
   public async getAll(): Promise<Array<Comment>> {
     return await this.prismaService.comment.findMany({

@@ -29,6 +29,19 @@ export class LikePostService {
       },
     });
   }
+
+  public async getAllFromPerson(
+    idPerson: string,
+  ): Promise<Array<LikePostEntity>> {
+    return await this.prisma.like_post.findMany({
+      where: {
+        lkp_person: idPerson,
+      },
+      include: {
+        post: true,
+      },
+    });
+  }
   public async createNewLikePostFromPerson(
     idPost: string,
     idPerson: string,
@@ -45,6 +58,9 @@ export class LikePostService {
             per_id: idPerson,
           },
         },
+      },
+      include: {
+        post: true,
       },
     });
   }

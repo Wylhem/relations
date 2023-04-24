@@ -16,14 +16,19 @@ import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
 import { LikePostEntity } from '../like_post/entities/like-post.entity';
 import { LikePostDto } from '../like_post/dto/like-post.dto';
-import { LikeCommentEntity } from '../like-comment/entities/like-comment.entity';
 import { LikeCommentDto } from '../like-comment/dto/like-comment.dto';
+import { LikeCommentService } from '../like-comment/like-comment.service';
+import { LikePostService } from '../like_post/like-post.service';
 
 @ApiBearerAuth()
 @ApiTags('Person')
 @Controller('person')
 export class PersonController {
-  constructor(private readonly personService: PersonService) {}
+  constructor(
+    private readonly personService: PersonService,
+    private readonly likeCommentService: LikeCommentService,
+    private readonly likesPostService: LikePostService,
+  ) {}
 
   /**
    * Get All Persons.
@@ -53,12 +58,14 @@ export class PersonController {
    *
    */
   @Get(':id/likePosts')
-  public async getAllLikePosts(@Param('id') id: string) {
-    const callResult = await this.personService.getAllLikePostFromPerson(id);
-    const allLikePosts: Array<LikePostEntity> = callResult.likePosts;
-    return allLikePosts.map((oneLikePost: LikePostEntity) =>
-      LikePostDto.Load(oneLikePost),
-    );
+  public async getAllLikePosts(
+    @Param('id') id: string,
+  ): Promise<Array<LikePostDto>> {
+    const likePost = await this.likesPostService.getAllFromPerson(id);
+    if (!likePost) {
+      throw new NotFoundException();
+    }
+    return likePost.map((likes) => LikePostDto.Load(likes));
   }
 
   /**
@@ -66,13 +73,14 @@ export class PersonController {
    *
    */
   @Get(':id/likeComments')
-  public async getAllLikeComments(@Param('id') id: string) {
-    const callResult: Person =
-      await this.personService.getAllLikeCommentFromPerson(id);
-    const allLikeComments: Array<LikeCommentEntity> = callResult.likeComments;
-    return allLikeComments.map((oneLikeComment: LikeCommentEntity) =>
-      LikeCommentDto.Load(oneLikeComment),
-    );
+  public async getAllLikeComments(
+    @Param('id') id: string,
+  ): Promise<Array<LikeCommentDto>> {
+    const likesComment = await this.likeCommentService.getAllFromPerson(id);
+    if (!likesComment) {
+      throw new NotFoundException();
+    }
+    return likesComment.map((likeComment) => LikeCommentDto.Load(likeComment));
   }
 
   /**
