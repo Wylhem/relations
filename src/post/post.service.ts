@@ -45,6 +45,24 @@ export class PostService {
     });
   }
 
+  public async connectPicture(
+    postId: string,
+    pictureId: string,
+  ): Promise<PostEntity> {
+    return await this.prisma.post.update({
+      data: {
+        picture: {
+          connect: {
+            pct_id: pictureId,
+          },
+        },
+      },
+      where: {
+        pst_id: postId,
+      },
+    });
+  }
+
   public async createNewPostFromPerson(
     idPerson: string,
     postDto: PostDto,
@@ -52,7 +70,7 @@ export class PostService {
   ): Promise<PostEntity> {
     return await this.prisma.$transaction(async (tx) => {
       const newCategories: CategoryEntity[] = new Array<CategoryEntity>();
-      if (categories.length > 0) {
+      if (categories && categories.length > 0) {
         for (const newsCat of categories) {
           newCategories.push(
             await tx.category.upsert({
@@ -68,37 +86,18 @@ export class PostService {
             }),
           );
         }
-        let post: PostEntity;
-        if (postDto?.picture?.id) {
-          post = await tx.post.create({
-            data: {
-              pst_title: postDto.title,
-              pst_text: postDto.text,
-              person: {
-                connect: {
-                  per_id: idPerson,
-                },
-              },
-              picture: {
-                connect: {
-                  pct_id: postDto?.picture.id,
-                },
+        const post: PostEntity = await tx.post.create({
+          data: {
+            pst_title: postDto.title,
+            pst_text: postDto.text,
+            person: {
+              connect: {
+                per_id: idPerson,
               },
             },
-          });
-        } else {
-          post = await tx.post.create({
-            data: {
-              pst_title: postDto.title,
-              pst_text: postDto.text,
-              person: {
-                connect: {
-                  per_id: idPerson,
-                },
-              },
-            },
-          });
-        }
+          },
+        });
+
         for (const cat of newCategories) {
           await tx.post_category.create({
             data: {
@@ -124,11 +123,6 @@ export class PostService {
             person: {
               connect: {
                 per_id: idPerson,
-              },
-            },
-            picture: {
-              connect: {
-                pct_id: postDto?.picture?.id,
               },
             },
           },

@@ -149,9 +149,10 @@ export class MeController {
       postDto,
       categories,
     );
-
+    if (postDto?.picture?.id) {
+      await this.postService.connectPicture(post.pst_id, postDto.picture.id);
+    }
     const newPost = await this.postService.getOne(post.pst_id);
-
     return PostDto.Load(newPost);
   }
 

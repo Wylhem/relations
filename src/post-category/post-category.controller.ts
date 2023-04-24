@@ -7,12 +7,14 @@ import {
   NotFoundException,
   Param,
   Post,
-  Put,
 } from '@nestjs/common';
 import { PostCategoryService } from './post-category.service';
 import { PostCategoryDto } from './dto/post-category.dto';
 import { PostCategory } from './entity/post-category.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('PostCategory')
+@ApiBearerAuth()
 @Controller('post-category')
 export class PostCategoryController {
   constructor(private readonly postCategoriesService: PostCategoryService) {}

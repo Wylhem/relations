@@ -114,13 +114,13 @@ model profile {
 
 model picture {
   pct_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pct_name String
-  pct_path String
+  pct_name String?
+  pct_path String?
   pct_size Int?
-  pct_type String
+  pct_type String?
 
   pct_createdAt DateTime @default(now())
-  pct_updatedAt DateTime @updatedAt
+  pct_updatedAt DateTime? @updatedAt
   posts         post[]
   person        person?
 }
