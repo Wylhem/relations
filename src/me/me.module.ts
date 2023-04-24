@@ -6,6 +6,7 @@ import { PersonService } from '../person/person.service';
 import { UsersService } from '../users/users.service';
 import { LikePostService } from "../like_post/like-post.service";
 import { FollowService } from '../follow/follow.service';
+import { LikeCommentService } from "../like-comment/like-comment.service";
 
 @Module({
   controllers: [MeController],
@@ -16,6 +17,7 @@ import { FollowService } from '../follow/follow.service';
     UsersService,
     FollowService,
     LikePostService,
+    LikeCommentService,
   ],
 })
 export class MeModule {}

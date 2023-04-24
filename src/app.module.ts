@@ -12,6 +12,7 @@ import { CommentModule } from './comment/comment.module';
 import { CategoryModule } from './category/category.module';
 import { PictureModule } from './picture/picture.module';
 import { FollowModule } from './follow/follow.module';
+import { LikeCommentModule } from './like-comment/like-comment.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FollowModule } from './follow/follow.module';
     PictureModule,
     LikePostModule,
     FollowModule,
+    LikeCommentModule,
   ],
   controllers: [],
   providers: [

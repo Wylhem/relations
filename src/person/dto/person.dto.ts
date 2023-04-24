@@ -1,15 +1,12 @@
 import { BaseDto } from '../../shared/base/base.dto';
-import { civility, follow, post, users } from '@prisma/client';
+import { civility} from '@prisma/client';
 import { Person } from '../entity/person.entitiy';
 import { UserDto } from '../../users/dto/user.dto';
-import { Users } from '../../users/entities/user.entity';
-import { PostEntity } from '../../post/entity/post.entity';
 import { PostDto } from '../../post/dto/post.dto';
 import { FollowDto } from '../../follow/dto/follow.dto';
-import { Follow } from '../../follow/entity/follow.entity';
 import { PictureDto } from '../../picture/dto/picture.dto';
 import { LikePostDto } from "../../like_post/dto/like-post.dto";
-
+import { LikeCommentDto } from "../../like-comment/dto/like-comment.dto";
 export class PersonDto extends BaseDto {
   /**
    * Gets or sets firstname.
@@ -55,6 +52,11 @@ export class PersonDto extends BaseDto {
    */
   likePosts?: Array<LikePostDto>;
 
+  /**
+   * Gets or sets LikeComments
+   */
+  likeComments?: Array<LikeCommentDto>;
+
   public static Load(person: Person): PersonDto {
     return {
       id: person.per_id,
@@ -67,6 +69,9 @@ export class PersonDto extends BaseDto {
         : null,
       likePosts: person.likePosts
         ? person.likePosts.map((likePost) => LikePostDto.Load(likePost))
+        : null,
+      likeComments: person.likeComments
+        ? person.likeComments.map((likeComment) => LikeCommentDto.Load(likeComment))
         : null,
       followers: person.follower
         ? person.follower.map((follower) => FollowDto.Load(follower))

@@ -17,6 +17,8 @@ import { PersonDto } from './dto/person.dto';
 import { person } from '@prisma/client';
 import { LikePostEntity } from '../like_post/entities/like-post.entity';
 import { LikePostDto } from '../like_post/dto/like-post.dto';
+import { LikeCommentEntity } from "../like-comment/entities/like-comment.entity";
+import { LikeCommentDto } from "../like-comment/dto/like-comment.dto";
 
 @ApiBearerAuth()
 @ApiTags('Person')
@@ -65,6 +67,17 @@ export class PersonController {
     return allLikePosts.map((oneLikePost: LikePostEntity) =>
       LikePostDto.Load(oneLikePost),
     );
+  }
+
+  /**
+   * Gets All Liked Comments from users
+   *
+   */
+  @Get(':id/likeComments')
+  public async getAllLikeComments(@Param('id') id: string) {
+    const callResult: Person = await this.personService.getAllLikeCommentFromPerson(id);
+    const allLikeComments: Array<LikeCommentEntity> = callResult.likeComments;
+    return allLikeComments.map((oneLikeComment: LikeCommentEntity ) => LikeCommentDto.Load(oneLikeComment));
   }
 
   /**

@@ -25,6 +25,9 @@ import { UserDto } from '../users/dto/user.dto';
 import { LikePostDto } from '../like_post/dto/like-post.dto';
 import { LikePostEntity } from '../like_post/entities/like-post.entity';
 import { LikePostService } from '../like_post/like-post.service';
+import { LikeCommentDto } from "../like-comment/dto/like-comment.dto";
+import { LikeCommentEntity } from "../like-comment/entities/like-comment.entity";
+import { LikeCommentService } from "../like-comment/like-comment.service";
 
 @ApiBearerAuth()
 @ApiTags('Me')
@@ -36,6 +39,7 @@ export class MeController {
     private readonly personService: PersonService,
     private readonly userService: UsersService,
     private readonly likePostService: LikePostService,
+    private readonly likeCommentService: LikeCommentService,
     private readonly followService: FollowService,
   ) {}
 
@@ -106,6 +110,22 @@ export class MeController {
   }
 
   /**
+   * Get All my like comment
+   * @param id
+   */
+  @Get('/likeComments')
+  public async getMyLikeComments(@GetCurrentUserId() id: string): Promise<PersonDto> {
+    const user: Users = await this.userService.getOne(id);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    const person: Person = await this.personService.getAllLikeCommentFromPerson(
+      user.person.per_id,
+    );
+    return PersonDto.Load(person);
+  }
+
+  /**
    * Create A new post
    * @param id
    * @param postDto
@@ -132,6 +152,28 @@ export class MeController {
    * @param likePostDto
    */
   @Post('/likePost')
+  public async createNewLikeComment(
+    @GetCurrentUserId() id: string,
+    @Body() likeCommentDto: LikeCommentDto,
+  ): Promise<LikeCommentDto> {
+    const user: Users = await this.userService.getOne(id);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    const likeComment: LikeCommentEntity =
+      await this.likeCommentService.createNewLikeCommentFromPerson(
+        likeCommentDto.comment.id,
+        user.person.per_id,
+      );
+    return LikeCommentDto.Load(likeComment);
+  }
+
+  /**
+   * Create A new like post
+   * @param id
+   * @param likePostDto
+   */
+  @Post('/likePost')
   public async createNewLikePost(
     @GetCurrentUserId() id: string,
     @Body() likePostDto: LikePostDto,
@@ -140,11 +182,10 @@ export class MeController {
     if (!user) {
       throw new ForbiddenException();
     }
-    const likePost: LikePostEntity =
-      await this.likePostService.createNewLikePostFromPerson(
-        likePostDto.post.id,
-        user.person.per_id,
-      );
+    const likePost: LikePostEntity = await this.likePostService.createNewLikePostFromPerson(
+      likePostDto.post.id,
+      user.person.per_id,
+    );
     return LikePostDto.Load(likePost);
   }
 
