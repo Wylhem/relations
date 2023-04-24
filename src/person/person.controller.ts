@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -14,8 +15,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
 import { person } from '@prisma/client';
-import { LikePostEntity } from "../like_post/entities/like-post.entity";
-import { LikePostDto } from "../like_post/dto/like-post.dto";
+import { LikePostEntity } from '../like_post/entities/like-post.entity';
+import { LikePostDto } from '../like_post/dto/like-post.dto';
+import { LikeCommentEntity } from "../like-comment/entities/like-comment.entity";
+import { LikeCommentDto } from "../like-comment/dto/like-comment.dto";
 
 @ApiBearerAuth()
 @ApiTags('Person')
@@ -40,6 +43,9 @@ export class PersonController {
   @Get(':id')
   public async getOne(@Param('id') id: string): Promise<PersonDto> {
     const person: Person = await this.personService.getOne(id);
+    if (!person) {
+      throw new NotFoundException();
+    }
     return PersonDto.Load(person);
   }
 
@@ -52,13 +58,26 @@ export class PersonController {
 
   /**
    * Gets All Liked Post from users
-   * @constructor
+   *
    */
   @Get(':id/likePosts')
   public async getAllLikePosts(@Param('id') id: string) {
     const callResult = await this.personService.getAllLikePostFromPerson(id);
-    const allLikePosts: Array<LikePostEntity> = callResult.like_post;
-    return allLikePosts.map((oneLikePost: LikePostEntity ) => LikePostDto.Load(oneLikePost));
+    const allLikePosts: Array<LikePostEntity> = callResult.likePosts;
+    return allLikePosts.map((oneLikePost: LikePostEntity) =>
+      LikePostDto.Load(oneLikePost),
+    );
+  }
+
+  /**
+   * Gets All Liked Comments from users
+   *
+   */
+  @Get(':id/likeComments')
+  public async getAllLikeComments(@Param('id') id: string) {
+    const callResult: Person = await this.personService.getAllLikeCommentFromPerson(id);
+    const allLikeComments: Array<LikeCommentEntity> = callResult.likeComments;
+    return allLikeComments.map((oneLikeComment: LikeCommentEntity ) => LikeCommentDto.Load(oneLikeComment));
   }
 
   /**
@@ -107,6 +126,9 @@ export class PersonController {
   @Delete(':id')
   public async delete(@Param('id') id: string): Promise<string> {
     const person: Person = await this.personService.delete(id);
+    if (!person) {
+      throw new NotFoundException();
+    }
     return person.per_id;
   }
 }

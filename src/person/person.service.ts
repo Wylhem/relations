@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
+import { Users } from '../users/entities/user.entity';
 
 @Injectable()
 export class PersonService {
@@ -24,6 +25,7 @@ export class PersonService {
       },
     });
   }
+
   /**
    * Get All Post From a person
    * @param id PersonId
@@ -43,13 +45,28 @@ export class PersonService {
    * Get All LikePost From a person
    * @param id PersonId
    */
-  public async getAllLikePostFromPerson(id: string) {
+  public async getAllLikePostFromPerson(id: string): Promise<Person> {
     return await this.prisma.person.findFirst({
       where: {
         per_id: id,
       },
       include: {
         like_post: true,
+      },
+    });
+  }
+
+  /**
+   * Get All Like Comment From a person
+   * @param id PersonId
+   */
+  public async getAllLikeCommentFromPerson(id: string) {
+    return await this.prisma.person.findFirst({
+      where: {
+        per_id: id,
+      },
+      include: {
+        like_comment: true,
       },
     });
   }

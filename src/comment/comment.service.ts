@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CommentDto } from './dto/comment.dto';
-import { PrismaService } from "../prisma/prisma.service";
-import { Comment } from "./entities/comment.entity";
+import { PrismaService } from '../prisma/prisma.service';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService {
@@ -11,8 +11,16 @@ export class CommentService {
     return await this.prismaService.comment.create({
       data: {
         cmt_text: commentDto.text,
-        cmt_comment: commentDto.comment,
-        cmt_person: commentDto.person.id,
+        post: {
+          connect: {
+            pst_id: commentDto.post.id,
+          },
+        },
+        person: {
+          connect: {
+            per_id: commentDto.person.id,
+          },
+        },
       },
       include: {
         person: true,
@@ -63,7 +71,11 @@ export class CommentService {
       },
       data: {
         cmt_text: commentDto.text,
-        cmt_comment: commentDto.comment,
+        post: {
+          connect: {
+            pst_id: commentDto.post.id,
+          },
+        },
       },
       include: {
         person: true,
