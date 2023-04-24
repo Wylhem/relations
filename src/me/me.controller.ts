@@ -25,6 +25,9 @@ import { UserDto } from '../users/dto/user.dto';
 import { LikePostDto } from '../like_post/dto/like-post.dto';
 import { LikePostEntity } from '../like_post/entities/like-post.entity';
 import { LikePostService } from '../like_post/like-post.service';
+import { CHECK_SHARP } from '../shared/constants';
+import { CategoryService } from '../category/category.service';
+import { CategoryEntity } from '../category/entities/category.entity';
 import { LikeCommentDto } from "../like-comment/dto/like-comment.dto";
 import { LikeCommentEntity } from "../like-comment/entities/like-comment.entity";
 import { LikeCommentService } from "../like-comment/like-comment.service";
@@ -41,6 +44,7 @@ export class MeController {
     private readonly likePostService: LikePostService,
     private readonly likeCommentService: LikeCommentService,
     private readonly followService: FollowService,
+    private readonly categoryService: CategoryService,
   ) {}
 
   /**
@@ -139,11 +143,16 @@ export class MeController {
     if (!user.person) {
       throw new ForbiddenException();
     }
+    const categories: Array<string> = postDto.text.match(CHECK_SHARP);
     const post: PostEntity = await this.postService.createNewPostFromPerson(
       user.person.per_id,
       postDto,
+      categories,
     );
-    return PostDto.Load(post);
+
+    const newPost = await this.postService.getOne(post.pst_id);
+
+    return PostDto.Load(newPost);
   }
 
   /**

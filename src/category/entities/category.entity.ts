@@ -1,7 +1,6 @@
-import { category } from "@prisma/client";
+import { category } from '@prisma/client';
 
-
-export class CategoryEntity implements category{
+export class CategoryEntity implements category {
   ctg_id: string;
   ctg_label: string;
   ctg_createdAt: Date;

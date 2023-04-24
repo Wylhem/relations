@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CategoryDto } from './dto/category.dto';
-import { PrismaService } from "../prisma/prisma.service";
-import { CategoryEntity } from "./entities/category.entity";
+import { PrismaService } from '../prisma/prisma.service';
+import { CategoryEntity } from './entities/category.entity';
 
 @Injectable()
 export class CategoryService {
@@ -25,6 +25,25 @@ export class CategoryService {
         ctg_label: categoryDto.label,
       },
     });
+  }
+  public async createMany(
+    stringArray: Array<string>,
+  ): Promise<Array<CategoryEntity>> {
+    return await this.prisma.$transaction(
+      stringArray.map((curr) =>
+        this.prisma.category.upsert({
+          where: {
+            ctg_label: curr,
+          },
+          create: {
+            ctg_label: curr,
+          },
+          update: {
+            ctg_label: curr,
+          },
+        }),
+      ),
+    );
   }
 
   public async delete(id: string): Promise<CategoryEntity> {
