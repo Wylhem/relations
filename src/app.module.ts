@@ -14,6 +14,7 @@ import { PictureModule } from './picture/picture.module';
 import { FollowModule } from './follow/follow.module';
 import { LikeCommentModule } from './like-comment/like-comment.module';
 import { PostCategoryModule } from './post-category/post-category.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PostCategoryModule } from './post-category/post-category.module';
     FollowModule,
     PostCategoryModule,
     LikeCommentModule,
+    VideoModule,
   ],
   controllers: [],
   providers: [

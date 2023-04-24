@@ -16,6 +16,7 @@ import { extname } from 'path';
 import { PictureDto } from './dto/picture.dto';
 import { PictureEntity } from './entity/picture.entity';
 import { FileFunction } from '../shared/function';
+import { multerOptions } from "./multerUpload.config";
 
 @ApiBearerAuth()
 @ApiTags('Picture')
@@ -43,19 +44,7 @@ export class PictureController {
   @ApiConsumes('multipart/form-data')
   @ApiFile()
   @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './files',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = `${Date.now()}-${Math.round(
-            Math.random() * 1e9,
-          )}`;
-          const ext = extname(file.originalname);
-          const filename = `${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
-    }),
+    FileInterceptor('file', multerOptions)
   )
   public async uploadFile(
     @UploadedFile() file: FileEntity,
