@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { LikeCommentDto } from './dto/like-comment.dto';
-import { PrismaService } from "../prisma/prisma.service";
-import { LikeCommentEntity } from "./entities/like-comment.entity";
+import { PrismaService } from '../prisma/prisma.service';
+import { LikeCommentEntity } from './entities/like-comment.entity';
 
 @Injectable()
 export class LikeCommentService {
   constructor(private readonly prisma: PrismaService) {}
 
-
-
-  public async create(likeCommentDto: LikeCommentDto): Promise<LikeCommentEntity> {
+  public async create(
+    likeCommentDto: LikeCommentDto,
+  ): Promise<LikeCommentEntity> {
     return await this.prisma.like_comment.create({
       data: {
         lke_comment: likeCommentDto.comment.id,
@@ -22,16 +22,34 @@ export class LikeCommentService {
     });
   }
 
+  public async getAllFromPerson(id: string): Promise<Array<LikeCommentEntity>> {
+    return await this.prisma.like_comment.findMany({
+      where: {
+        lkc_person: id,
+      },
+      include: {
+        comment: true,
+      },
+    });
+  }
+  public async countLikeComment(idComment: string): Promise<number> {
+    return await this.prisma.like_comment.count({
+      where: {
+        lke_comment: idComment,
+      },
+    });
+  }
+
   public async createNewLikeCommentFromPerson(
     idComment: string,
     idPerson: string,
   ): Promise<LikeCommentEntity> {
     return await this.prisma.like_comment.create({
       data: {
-        comment:{
+        comment: {
           connect: {
-            cmt_id: idComment
-          }
+            cmt_id: idComment,
+          },
         },
         person: {
           connect: {
@@ -58,7 +76,7 @@ export class LikeCommentService {
       },
       include: {
         person: true,
-        comment: true
+        comment: true,
       },
     });
   }

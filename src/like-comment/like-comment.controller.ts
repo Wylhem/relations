@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { LikeCommentService } from './like-comment.service';
 import { LikeCommentDto } from './dto/like-comment.dto';
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { LikeCommentEntity } from "./entities/like-comment.entity";
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { LikeCommentEntity } from './entities/like-comment.entity';
 
 @ApiBearerAuth()
 @ApiTags('LikeComment')
@@ -16,7 +15,8 @@ export class LikeCommentController {
    */
   @Get()
   public async getAll(): Promise<Array<LikeCommentDto>> {
-    const likePosts: Array<LikeCommentEntity> = await this.likeCommentService.getAll();
+    const likePosts: Array<LikeCommentEntity> =
+      await this.likeCommentService.getAll();
     return likePosts.map((likePosts) => LikeCommentDto.Load(likePosts));
   }
 
@@ -26,17 +26,31 @@ export class LikeCommentController {
    */
   @Get(':id')
   public async getOne(@Param('id') id: string): Promise<LikeCommentDto> {
-    const likePost: LikeCommentEntity = await this.likeCommentService.getOne(id);
+    const likePost: LikeCommentEntity = await this.likeCommentService.getOne(
+      id,
+    );
     return LikeCommentDto.Load(likePost);
   }
 
   /**
+   * Cout number of likes from specific comment
+   * @param id
+   */
+  @Get(':id/count')
+  public async countNumberOfLikes(@Param('id') id: string) {
+    return await this.likeCommentService.countLikeComment(id);
+  }
+  /*
    * Create new post
    * @param likePostDto PostDto
    */
   @Post()
-  public async create(@Body() likePostDto: LikeCommentDto): Promise<LikeCommentDto> {
-    const likePost: LikeCommentEntity = await this.likeCommentService.create(likePostDto);
+  public async create(
+    @Body() likePostDto: LikeCommentDto,
+  ): Promise<LikeCommentDto> {
+    const likePost: LikeCommentEntity = await this.likeCommentService.create(
+      likePostDto,
+    );
     return LikeCommentDto.Load(likePost);
   }
 

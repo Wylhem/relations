@@ -31,6 +31,7 @@ import { CategoryEntity } from '../category/entities/category.entity';
 import { LikeCommentDto } from '../like-comment/dto/like-comment.dto';
 import { LikeCommentEntity } from '../like-comment/entities/like-comment.entity';
 import { LikeCommentService } from '../like-comment/like-comment.service';
+import { like_comment } from '@prisma/client';
 
 @ApiBearerAuth()
 @ApiTags('Me')
@@ -92,6 +93,10 @@ export class MeController {
     const person: Person = await this.personService.getAllFromPerson(
       user.person.per_id,
     );
+
+    for (const post of person.posts) {
+      post.nbLikes = await this.likePostService.countLikePost(post.pst_id);
+    }
     return PersonDto.Load(person);
   }
 
@@ -120,15 +125,20 @@ export class MeController {
   @Get('/likeComments')
   public async getMyLikeComments(
     @GetCurrentUserId() id: string,
-  ): Promise<PersonDto> {
+  ): Promise<Array<LikeCommentDto>> {
     const user: Users = await this.userService.getOne(id);
     if (!user.person) {
       throw new ForbiddenException();
     }
-    const person: Person = await this.personService.getAllLikeCommentFromPerson(
-      user.person.per_id,
-    );
-    return PersonDto.Load(person);
+    const likesComments: Array<LikeCommentEntity> =
+      await this.likeCommentService.getAllFromPerson(user.person.per_id);
+
+    for (const likeComment of likesComments) {
+      likeComment.nbLikes = await this.likeCommentService.countLikeComment(
+        likeComment.lke_comment,
+      );
+    }
+    return likesComments.map((likeComment) => LikeCommentDto.Load(likeComment));
   }
 
   /**
