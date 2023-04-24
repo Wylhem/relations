@@ -1,6 +1,7 @@
 import { civility, person } from '@prisma/client';
 import { Users } from '../../users/entities/user.entity';
 import { PostEntity } from '../../post/entity/post.entity';
+import { LikePostEntity } from "../../like_post/entities/like-post.entity";
 import { Comment } from "../../comment/entities/comment.entity";
 
 export class Person implements person {
@@ -14,6 +15,8 @@ export class Person implements person {
   users?: Users;
 
   posts?: Array<PostEntity>;
+
+  likePosts?: Array<LikePostEntity>;
 
   comments?: Array<Comment>;
 }

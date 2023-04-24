@@ -7,9 +7,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './shared/guards/at.guard';
 import { PostModule } from './post/post.module';
 import { MeModule } from './me/me.module';
+import { LikePostModule } from './like_post/like-post.module';
 import { CommentModule } from './comment/comment.module';
 import { CategoryModule } from './category/category.module';
 import { PictureModule } from './picture/picture.module';
+
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { PictureModule } from './picture/picture.module';
     CategoryModule,
     CommentModule,
     PictureModule,
+    LikePostModule
   ],
   controllers: [],
   providers: [

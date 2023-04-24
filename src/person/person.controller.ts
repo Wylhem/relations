@@ -14,6 +14,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
 import { person } from '@prisma/client';
+import { LikePostEntity } from "../like_post/entities/like-post.entity";
+import { LikePostDto } from "../like_post/dto/like-post.dto";
 
 @ApiBearerAuth()
 @ApiTags('Person')
@@ -36,7 +38,7 @@ export class PersonController {
    * @constructor
    */
   @Get(':id')
-  public async GetOne(@Param('id') id: string): Promise<PersonDto> {
+  public async getOne(@Param('id') id: string): Promise<PersonDto> {
     const person: Person = await this.personService.getOne(id);
     return PersonDto.Load(person);
   }
@@ -46,14 +48,18 @@ export class PersonController {
    * @constructor
    */
   @Get(':id/posts')
-  public async GetAllPosts(@Param('id') id: string) {}
+  public async getAllPosts(@Param('id') id: string) {}
 
   /**
-   * Gets All Comment from users
+   * Gets All Liked Post from users
    * @constructor
    */
-  @Get(':id/comments')
-  public async GetAllComments(@Param('id') id: string) {}
+  @Get(':id/likePosts')
+  public async getAllLikePosts(@Param('id') id: string) {
+    const callResult = await this.personService.getAllLikePostFromPerson(id);
+    const allLikePosts: Array<LikePostEntity> = callResult.like_post;
+    return allLikePosts.map((oneLikePost: LikePostEntity ) => LikePostDto.Load(oneLikePost));
+  }
 
   /**
    * Create new person
