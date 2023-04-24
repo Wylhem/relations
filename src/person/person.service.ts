@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Person } from './entity/person.entitiy';
 import { PersonDto } from './dto/person.dto';
-import { Users } from '../users/entities/user.entity';
 
 @Injectable()
 export class PersonService {
@@ -22,6 +21,8 @@ export class PersonService {
       },
       include: {
         users: true,
+        avatar: true,
+        posts: true,
       },
     });
   }

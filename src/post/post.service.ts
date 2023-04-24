@@ -12,6 +12,15 @@ export class PostService {
     return await this.prisma.post.findMany({
       include: {
         person: true,
+        comment: {
+          include: {
+            person: {
+              include: {
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -23,6 +32,7 @@ export class PostService {
       include: {
         person: true,
         picture: true,
+        comment: true,
         post_category: {
           include: {
             category: true,

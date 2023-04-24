@@ -1,12 +1,12 @@
 import { BaseDto } from '../../shared/base/base.dto';
-import { civility} from '@prisma/client';
+import { civility } from '@prisma/client';
 import { Person } from '../entity/person.entitiy';
 import { UserDto } from '../../users/dto/user.dto';
 import { PostDto } from '../../post/dto/post.dto';
 import { FollowDto } from '../../follow/dto/follow.dto';
 import { PictureDto } from '../../picture/dto/picture.dto';
-import { LikePostDto } from "../../like_post/dto/like-post.dto";
-import { LikeCommentDto } from "../../like-comment/dto/like-comment.dto";
+import { LikePostDto } from '../../like_post/dto/like-post.dto';
+import { LikeCommentDto } from '../../like-comment/dto/like-comment.dto';
 export class PersonDto extends BaseDto {
   /**
    * Gets or sets firstname.
@@ -32,7 +32,7 @@ export class PersonDto extends BaseDto {
   /**
    *  Gets or sets picture
    */
-  picture?: PictureDto;
+  avatar?: PictureDto;
   /**
    * Gets or sets Posts
    */
@@ -71,7 +71,9 @@ export class PersonDto extends BaseDto {
         ? person.likePosts.map((likePost) => LikePostDto.Load(likePost))
         : null,
       likeComments: person.likeComments
-        ? person.likeComments.map((likeComment) => LikeCommentDto.Load(likeComment))
+        ? person.likeComments.map((likeComment) =>
+            LikeCommentDto.Load(likeComment),
+          )
         : null,
       followers: person.follower
         ? person.follower.map((follower) => FollowDto.Load(follower))
@@ -79,7 +81,7 @@ export class PersonDto extends BaseDto {
       following: person.following
         ? person.following.map((following) => FollowDto.Load(following))
         : null,
-      picture: person.picture ? PictureDto.Load(person.picture) : null,
+      avatar: person.avatar ? PictureDto.Load(person.avatar) : null,
       createdAt: person.per_createdAt,
       updatedAt: person.per_updatedAt,
     };

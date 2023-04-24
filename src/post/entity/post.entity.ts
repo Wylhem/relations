@@ -1,6 +1,7 @@
 import { post } from '@prisma/client';
 import { Person } from '../../person/entity/person.entitiy';
 import { PictureEntity } from '../../picture/entity/picture.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 import { PostCategory } from '../../post-category/entity/post-category.entity';
 
 export class PostEntity implements post {
@@ -18,6 +19,8 @@ export class PostEntity implements post {
   picture?: PictureEntity;
 
   post_category?: Array<PostCategory>;
+
+  comment?: Array<Comment>;
 
   /**
    * /!\ Calculated Field.
